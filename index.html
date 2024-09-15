@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flappy Bird</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Firebase App (Core) SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <!-- Firebase Analytics SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <!-- Firebase Remote Config SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-remote-config-compat.js"></script>
+</head>
+<body>
+    <div id="unity-container">
+        <canvas id="unity-canvas" width="1080" height="1920" tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="unity-warning"></div>
+    </div>
+    <script>
+        console.log('Starting Firebase initialization...');
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyByy1YPyLDcrc3GXXeUVN1tu-LORXw_RGI",
+            authDomain: "flappybird-telegram.firebaseapp.com",
+            projectId: "flappybird-telegram",
+            storageBucket: "flappybird-telegram.appspot.com",
+            messagingSenderId: "1000970976112",
+            appId: "1:1000970976112:web:4355a96b82fcc9bd6fedb5",
+            measurementId: "G-XJWH5CRC48"
+        };
+
+        try {
+            console.log('Initializing Firebase App...');
+            // Initialize Firebase
+            const app = firebase.initializeApp(firebaseConfig);
+            console.log('Firebase initialized successfully.');
+
+            console.log('Initializing Firebase Analytics...');
+            // Initialize Analytics
+            const analytics = firebase.analytics(app);
+            console.log('Firebase Analytics initialized.');
+
+            console.log('Initializing Firebase Remote Config...');
+            // Initialize Remote Config
+            const remoteConfig = firebase.remoteConfig(app);
+            remoteConfig.settings = {
+                minimumFetchIntervalMillis: 0
+            };
+            console.log('Firebase Remote Config initialized.');
+
+            // Set up window.firebaseFunctions
+            window.firebaseFunctions = {
+                fetchAndActivate: async function() {
+                    try {
+                        await remoteConfig.fetchAndActivate();
+                        console.log('Remote Config fetched and activated.');
+                    } catch (error) {
+                        console.error('Error fetching and activating Remote Config:', error);
+                    }
+                },
+                getRemoteConfigValue: function(key) {
+                    try {
+                        const value = remoteConfig.getValue(key).asString();
+                        console.log(`Retrieved Remote Config value for ${key}: ${value}`);
+                        return value;
+                    } catch (error) {
+                        console.error(`Error getting Remote Config value for key ${key}:`, error);
+                    }
+                },
+                logEvent: function(eventName, eventParams) {
+                    try {
+                        analytics.logEvent(eventName, eventParams);
+                        console.log(`Event logged: ${eventName}`, eventParams);
+                    } catch (error) {
+                        console.error(`Error logging event ${eventName}:`, error);
+                    }
+                }
+            };
+
+            console.log('Firebase functions set up successfully.');
+
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
+        }
+    </script>
+    <script src="playDeckBridge.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
